@@ -1,0 +1,19 @@
+{
+  "status": "research_draft_not_approved",
+  "model": "first_order_yield_proxy",
+  "spread_window_years": 20,
+  "minimum_spread_months": 120,
+  "spread_half_life_years": 5,
+  "report_horizons_years": [1, 5, 10, 20, 30, 40],
+  "assets": {
+    "short_term_bond": {"rate_node_weights": {"BC_2YEAR": 1.0}},
+    "us_aggregate": {"rate_node_weights": {"BC_5YEAR": 0.5, "BC_10YEAR": 0.5}}
+  },
+  "cases": [
+    {"name": "gross_constant_spread", "spread_anchor": "current", "annual_loss_bps": 0},
+    {"name": "gross_median20_spread", "spread_anchor": "historical_median", "annual_loss_bps": 0},
+    {"name": "loss_10bps_sensitivity", "spread_anchor": "current", "annual_loss_bps": 10},
+    {"name": "loss_25bps_sensitivity", "spread_anchor": "current", "annual_loss_bps": 25}
+  ],
+  "note": "All node weights and loss sensitivities are illustrative judgments, not estimates or approved assumptions. Zero-loss gross paths are not final expected returns. Yield/12 is a carry proxy; no separate roll-down or convexity is included. Constant durations and yield-basis residual are simplifying assumptions."
+}

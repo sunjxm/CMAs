@@ -174,6 +174,51 @@ historically available inputs or approved assumptions. Review the methodology
 and comparison tables before adopting the numbers. Source histories and
 data/ exports remain local and are not needed to version-control the code.
 
+## Fixed Income Model Foundation
+
+The selected primary research anchor is now `hlw_median20`; Treasury curve slopes
+still use 30-year means. Six benchmark sleeves are registered in bond_assets.json
+for nominal USD returns, including USD-hedged global ex-USD and Bloomberg EM USD Aggregate.
+See docs/FIXED_INCOME_RETURNS.md for definitions and outstanding assumptions.
+
+```powershell
+python main.py --task anchor-review
+python main.py --task curve-projection
+python main.py --task asset-review
+python main.py --task asset-metadata
+python main.py --task asset-analytics
+python main.py --task asset-analytics-probe
+python main.py --task asset-analytics-normalize
+```
+
+Projection settings are in projection_settings.json: 40 years at monthly steps,
+a provisional five-year base half-life and three/eight-year sensitivities. Outputs
+are par-node projections, not discount factors or asset-return forecasts. Changing
+anchor settings requires a new anchor-review before projection. Use --review-bundle
+to pin an archived review for reproducibility.
+
+All six user-supplied Bloomberg benchmark tickers are configured. The user approved
+LF98TRUU broad US Corporate High Yield and EMUSTRUU EM USD Aggregate instead of
+the earlier ICE BB-B constrained and JP Morgan EMBI requests. Confirm metadata,
+rating/maturity filters, total-return convention and hedging before setting each
+benchmark's verified flag. Configure analytics field mappings and verify units in
+Bloomberg FLDS. After review, download selected sleeves with:
+
+```powershell
+python main.py --task asset-history --assets us_aggregate
+```
+
+The six benchmark definitions are now user-approved, with successful metadata
+evidence and downloaded monthly histories. Reviewed nominal analytics mappings
+are recorded separately. Field discovery archives definitions; the probe archives
+raw candidate values; offline normalization consumes only verified mappings and
+preserves gaps. TIPS real analytics, global spread/hedge inputs and convexity scaling
+remain unresolved. These tasks do not generate expected-return forecasts.
+
+Unverified benchmarks are rejected. Historical monthly returns do not bridge
+missing months. Metadata is a current snapshot, not data at --end. All new tasks
+archive summaries and hashes in data/. The existing --task all remains download-only.
+
 ## Word Review Copies
 
 `convert_md_to_docx.py` turns Markdown into editable Word documents with a clean
@@ -225,6 +270,24 @@ editable in Word rather than images. It supports common mathematical notation,
 not complete LaTeX documents or custom macros. Conversion errors stop visibly;
 visually review complex expressions after exporting. Install the updated
 documents extra above on each machine before using equation conversion.
+
+## TIPS Proxy Inputs
+
+```powershell
+python main.py --task tips-inputs
+```
+
+Downloads monthly 5-year TIPS benchmark yield, index duration proxy and average maturity into a separate hashed archive under `data`. These are explicitly provisional inputs, not verified index real analytics or expected returns. See `docs/TIPS_INPUTS.md` for the investigation and limitations. Missing observations are not filled.
+
+## Investment-Grade Return Research
+
+```powershell
+python main.py --task bond-returns
+```
+
+Run in activated `my_env`. Uses archived curves and reviewed index analytics offline to generate 40-year monthly paths for Short Term Bond and US Aggregate, annual attribution, long-horizon annualized returns and historical explanatory diagnostics. Source bundles can be pinned with `--curve-bundle`, `--analytics-bundle` and `--history-bundle`; assumptions are in `return_settings.json` or `--return-settings`.
+
+These are draft deterministic scenarios. The gross baseline has no credit losses or fees; spread/loss cases are sensitivities. See `docs/INVESTMENT_GRADE_RETURNS.md`. Other sleeves are not generated, and `--task all` remains download-only.
 
 ## References
 

@@ -20,15 +20,55 @@ GROUPS = ("treasury", "cash", "real_rates")
 PROJECT_DIR = Path(__file__).resolve().parent
 DATA_DIR = PROJECT_DIR / "data"
 DOWNLOAD_TASKS = ("check", "metadata", "history", "treasury-par", "official-inputs")
-TASKS = (*DOWNLOAD_TASKS, "process-inputs", "anchor-review", "all")
+TASKS = (*DOWNLOAD_TASKS, "process-inputs", "anchor-review", "curve-projection",
+         "asset-review", "asset-metadata", "asset-history", "asset-analytics", "asset-analytics-probe", "asset-analytics-normalize", "tips-inputs", "bond-returns", "all")
 
 
 def run(task=DEFAULT_TASK, start=START_DATE, end=END_DATE, groups=GROUPS,
         output=DATA_DIR, host="localhost", port=8194, frequency=FREQUENCY,
-        official_archive=None, treasury_bundle=None, settings=None):
+        official_archive=None, treasury_bundle=None, settings=None, review_bundle=None,
+        projection_settings=None, asset_catalog=None, assets=None, return_settings=None,
+        curve_bundle=None, analytics_bundle=None, history_bundle=None):
     """Run a selected task or the full data pipeline, independent of working directory."""
     if task not in TASKS:
         raise ValueError(f"Unknown task: {task}. Choose one of {TASKS}.")
+    if task == "bond-returns":
+        if frequency != "monthly":
+            raise ValueError("Bond return research uses monthly frequency.")
+        from cma_curve.bond_returns import run_bond_returns
+        return run_bond_returns(output, return_settings or PROJECT_DIR / "return_settings.json",
+                                asset_catalog or PROJECT_DIR / "bond_assets.json",
+                                settings or PROJECT_DIR / "anchor_settings.json",
+                                projection_settings or PROJECT_DIR / "projection_settings.json",
+                                curve_bundle, analytics_bundle, history_bundle)
+    if task == "tips-inputs":
+        if frequency != "monthly":
+            raise ValueError("TIPS proxy inputs use monthly frequency.")
+        from cma_curve.tips_inputs import run_tips_inputs
+        return run_tips_inputs(output, start, end, BloombergClient(host, port))
+    if task == "asset-analytics":
+        from cma_curve.asset_analytics import discover_analytics
+        return discover_analytics(asset_catalog or PROJECT_DIR / "bond_assets.json", output, host, port)
+    if task == "asset-analytics-probe":
+        from cma_curve.asset_analytics import probe_analytics
+        return probe_analytics(asset_catalog or PROJECT_DIR / "bond_assets.json", output, start, end,
+                               BloombergClient(host, port))
+    if task == "asset-analytics-normalize":
+        from cma_curve.asset_analytics import normalize_probe
+        return normalize_probe(asset_catalog or PROJECT_DIR / "bond_assets.json", output)
+    if task == "curve-projection":
+        if frequency != "monthly":
+            raise ValueError("Curve projection uses the monthly calibration pipeline.")
+        from cma_curve.curve_projection import run_projection
+        return run_projection(output, settings or PROJECT_DIR / "anchor_settings.json",
+                              projection_settings or PROJECT_DIR / "projection_settings.json", review_bundle)
+    if task in {"asset-review", "asset-metadata", "asset-history"}:
+        if frequency != "monthly":
+            raise ValueError("Bond index inputs use monthly frequency.")
+        from cma_curve.bond_inputs import run_asset_inputs
+        client = None if task == "asset-review" else BloombergClient(host, port)
+        return run_asset_inputs(task, asset_catalog or PROJECT_DIR / "bond_assets.json",
+                                output, start, end, client, assets)
     if task in {"process-inputs", "anchor-review"}:
         if frequency != "monthly":
             raise ValueError("Input processing and anchor review use monthly calibration only.")
@@ -67,9 +107,19 @@ def main(argv=None):
     parser.add_argument("--official-archive", type=Path)
     parser.add_argument("--treasury-bundle", type=Path)
     parser.add_argument("--settings", type=Path)
+    parser.add_argument("--review-bundle", type=Path)
+    parser.add_argument("--projection-settings", type=Path)
+    parser.add_argument("--asset-catalog", type=Path)
+    parser.add_argument("--return-settings", type=Path)
+    parser.add_argument("--curve-bundle", type=Path)
+    parser.add_argument("--analytics-bundle", type=Path)
+    parser.add_argument("--history-bundle", type=Path)
+    parser.add_argument("--assets", nargs="+", help="Asset keys to review/download; defaults to all six.")
     args = parser.parse_args(argv)
     run(args.task, args.start, args.end, args.groups, args.output, args.host, args.port, args.frequency,
-        args.official_archive, args.treasury_bundle, args.settings)
+        args.official_archive, args.treasury_bundle, args.settings, args.review_bundle,
+        args.projection_settings, args.asset_catalog, args.assets, args.return_settings,
+        args.curve_bundle, args.analytics_bundle, args.history_bundle)
 
 
 if __name__ == "__main__":

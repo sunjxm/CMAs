@@ -1,0 +1,8 @@
+{
+  "status": "research_draft_not_approved",
+  "horizon_years": 40,
+  "steps_per_year": 12,
+  "base_half_life_years": 5,
+  "half_life_scenarios_years": [3, 5, 8],
+  "note": "Half-lives are provisional sensitivity settings, not fitted estimates. Projected par nodes are not discount factors or expected asset returns."
+}

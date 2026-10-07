@@ -2,9 +2,9 @@
 
 ## Document Control
 
-Version: 0.3, working methodology draft. Prepared October 6, 2026 (US Eastern time).
+Version: 0.6, working methodology draft. Updated October 7, 2026 (US Eastern time).
 
-Status: data acquisition, source processing, and candidate anchor estimation are implemented. Equilibrium choices are not approved. Curve projection, discount-factor construction, and fixed-income expected-return calculations remain planned.
+Status: data acquisition, source processing, candidate anchor estimation, baseline par-node projection, bond benchmark inputs, TIPS proxy inputs and first-order research return paths for Short Term Bond and US Aggregate are implemented. The selected primary research candidate is HLW median20. Equilibrium levels, convergence settings and return approximations are not committee-approved. Discount-factor construction, the other four return sleeves and final expected-return approval remain outstanding. See INVESTMENT_GRADE_RETURNS.md for the implemented research return engine and its limitations.
 
 This document separates implemented calculations from proposed extensions. Numerical review snapshots are preserved in dated run summaries rather than treated as permanent policy assumptions. The accompanying development log records the evolution of the process.
 
@@ -78,8 +78,8 @@ This allows current-vintage research and comparison, but not an unbiased histori
 
 The implementation generates three macro candidates rather than automatically averaging models:
 
-1. Latest available HLW US r-star: the provisional primary research candidate.
-2. Median of the most recent 20 consecutive HLW quarterly estimates: a smoothing sensitivity.
+1. Latest available HLW US r-star: a monitoring sensitivity.
+2. Median of the most recent 20 consecutive HLW quarterly estimates: the selected primary research candidate.
 3. Latest available one-sided LW US r-star: a model-selection sensitivity.
 
 Each uses the latest PCE10 median forecast whose survey-period label does not exceed the observation cutoff. Inputs older than the configured maximum of 12 months are rejected. The 20-quarter median requires all 20 consecutive quarters and gives equal weight to each quarter.
@@ -156,27 +156,29 @@ These are reproducible candidate outputs, not approved CMA levels. The roughly 6
 
 The historical 10-year par spread to three-month yields averaged approximately 128.30 basis points. The same 30-year window produced a mean ACM 10-year zero-coupon premium of approximately 72.58 basis points. The concepts differ; their difference is not added as a pricing adjustment.
 
-## 9. Convergence Design: Planned
+## 9. Convergence Design
 
-The proposed baseline projects each maturity toward its reviewed equilibrium anchor:
+The implemented research baseline projects each maturity toward its selected equilibrium candidate:
 
 $$
 y_m(h) = a_m + \left[y_m(0) - a_m\right] 2^{-\frac{h}{H_m}}
 $$
 
-Here $a_m$ is the reviewed equilibrium anchor, $y_m(0)$ is the starting par yield, and $H_m > 0$ is the convergence half-life. Forecast horizon $h$ and half-life $H_m$ are both measured in years. This notation describes the planned projection, not a newly implemented calculation.
+Here $a_m$ is the selected equilibrium candidate, $y_m(0)$ is the starting par yield, and $H_m > 0$ is the convergence half-life. Forecast horizon $h$ and half-life $H_m$ are both measured in years. The engine outputs monthly par-node paths over 40 years.
 
 Maturity m is distinct from forecast horizon h. Horizon zero must reproduce the common-date starting curve. Half-lives of three, five, and eight years are proposed sensitivity settings, not empirically validated constants. Exponential convergence approaches the anchor asymptotically; it does not imply arrival at a fixed terminal year.
 
 An optional near-term OIS/futures/survey path can be assessed after the baseline is implemented. Market forwards are not automatically unbiased forecasts and a forward short rate is not a future ten-year bond yield. Premium, convexity, instrument-basis, and handoff assumptions would need separate treatment. The additional layer should be retained only when it improves forecast validation or materially informs portfolio decisions.
 
-This convergence engine has not yet been implemented in the current phase.
+The provisional base uses a five-year half-life at all maturities, with three- and eight-year sensitivity paths. This is a configuration choice, not a fitted estimate. The projection preserves the common-date starting nodes and verifies source checksums and anchor settings. It does not yet interpolate or bootstrap discount curves or calculate portfolio returns. The primary HLW median20 selection changes the neutral-rate input only; historical spreads continue to use their 30-year mean.
 
 ## 10. Pricing And Return Design: Planned
 
 Projected curves will be converted to discount factors using a reviewed fixed-income library and explicit conventions. Verification will include reproduction of input par rates, positive discount factors, and internally consistent zero and forward rates.
 
 Fixed-income returns will be calculated by aging and repricing actual representative cash flows, including coupon income and reinvestment. Constant-maturity rebalanced portfolios and buy-and-hold bonds require different definitions. Roll-down must not be added twice when repricing already captures it. Credit spreads, defaults, TIPS indexation, and callable or mortgage exposures require additional models.
+
+Six rebalanced benchmark sleeves are now registered for nominal USD returns: short-term government/credit, US Aggregate, TIPS 1-10Y, Bloomberg US Corporate High Yield, Global Aggregate ex USD hedged to USD, and Bloomberg Emerging Market USD Aggregate. On October 7, the user confirmed the Bloomberg HY and EM benchmarks instead of the earlier ICE BB-B constrained and JP Morgan EMBI requests. Broader HY rating coverage and EM corporate exposure must be reflected in the return model. A monthly carry-and-risk approximation is proposed as the first resource-efficient index-level implementation, with explicit validation before use and cash-flow repricing as a later refinement. Benchmark identifiers, analytics, credit losses, real/foreign curves and hedge carry must be verified first. FIXED_INCOME_RETURNS.md documents the separate models and outstanding inputs. Asset registration and historical downloads do not constitute expected-return forecasts.
 
 ## 11. Validation And Approval
 

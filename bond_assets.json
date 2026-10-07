@@ -1,0 +1,267 @@
+{
+  "status": "research_draft_not_approved",
+  "return_basis": "nominal",
+  "reporting_currency": "USD",
+  "portfolio_convention": "rebalanced_index",
+  "assets": [
+    {
+      "key": "short_term_bond",
+      "name": "Bloomberg US Aggregate Government & Credit (1-3Y)",
+      "ticker": "LGC3TRUU Index",
+      "verified": true,
+      "currency_exposure": "USD",
+      "model": "us_nominal_credit",
+      "total_return_field": "PX_LAST",
+      "analytics": {
+        "yield": {
+          "field": "INDEX_YIELD_TO_WORST",
+          "units": "percent",
+          "verified": true,
+          "verification_basis": "Index weighted yield to worst, quoted in percentage points; not automatically expected carry.",
+          "definition_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044912_7451b33f\\field_candidates.csv",
+          "definition_evidence_sha256": "5b8f838f04adb3584ddf3807993ae16e10afdccff2d89dfdc7eac392f15f9ff0"
+        },
+        "rate_duration": {
+          "field": "INDEX_OAD_TSY",
+          "units": "years",
+          "verified": true,
+          "verification_basis": "Option-adjusted par-curve rate duration holding OAS fixed; duration in years.",
+          "definition_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044912_7451b33f\\field_candidates.csv",
+          "definition_evidence_sha256": "5b8f838f04adb3584ddf3807993ae16e10afdccff2d89dfdc7eac392f15f9ff0"
+        },
+        "spread_duration": {
+          "field": "INDEX_BLENDED_SPREAD_DUR",
+          "units": "years",
+          "verified": true,
+          "verification_basis": "USD-index sensitivity to OAS holding the Treasury curve fixed; duration in years.",
+          "definition_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044912_7451b33f\\field_candidates.csv",
+          "definition_evidence_sha256": "5b8f838f04adb3584ddf3807993ae16e10afdccff2d89dfdc7eac392f15f9ff0"
+        },
+        "oas": {
+          "field": "INDEX_OAS_TSY_BP",
+          "units": "basis_points",
+          "verified": true,
+          "verification_basis": "Definition explicitly specifies basis points; do not use percentage INDEX_OAS_TSY with a bps scale.",
+          "definition_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044912_7451b33f\\field_candidates.csv",
+          "definition_evidence_sha256": "5b8f838f04adb3584ddf3807993ae16e10afdccff2d89dfdc7eac392f15f9ff0"
+        }
+      },
+      "verification_status": "benchmark_approved_analytics_reviewed",
+      "reported_benchmark": "Bloomberg 1-3 Yr Gov/Credit Index",
+      "definition_note": "Benchmark definition accepted by user with archived Bloomberg metadata and documented index identity. Analytics have separate field-level verification; expected-return assumptions are not approved.",
+      "definition_source": "https://assets.bbhub.io/professional/sites/27/01030_20240327.pdf",
+      "verification_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044515_53edb1b4\\bloomberg_reference.csv",
+      "verification_evidence_sha256": "f10c223ef5685de47426badfdf7b65172c1c28aad58c0f346750881b72aa604a",
+      "verification_basis": "User approval on October 7 2026, documented ticker definitions and archived NAME/CRNCY/PX_LAST. Analytics and return model are not approved.",
+      "analytics_review_note": "Convexity scaling remains unverified and is not configured. Yield-to-worst is an input, not an approved carry assumption."
+    },
+    {
+      "key": "us_aggregate",
+      "name": "Bloomberg US Aggregate",
+      "ticker": "LBUSTRUU Index",
+      "verified": true,
+      "currency_exposure": "USD",
+      "model": "us_aggregate_sectors",
+      "total_return_field": "PX_LAST",
+      "analytics": {
+        "yield": {
+          "field": "INDEX_YIELD_TO_WORST",
+          "units": "percent",
+          "verified": true,
+          "verification_basis": "Index weighted yield to worst, quoted in percentage points; not automatically expected carry.",
+          "definition_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044912_7451b33f\\field_candidates.csv",
+          "definition_evidence_sha256": "5b8f838f04adb3584ddf3807993ae16e10afdccff2d89dfdc7eac392f15f9ff0"
+        },
+        "rate_duration": {
+          "field": "INDEX_OAD_TSY",
+          "units": "years",
+          "verified": true,
+          "verification_basis": "Option-adjusted par-curve rate duration holding OAS fixed; duration in years.",
+          "definition_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044912_7451b33f\\field_candidates.csv",
+          "definition_evidence_sha256": "5b8f838f04adb3584ddf3807993ae16e10afdccff2d89dfdc7eac392f15f9ff0"
+        },
+        "spread_duration": {
+          "field": "INDEX_BLENDED_SPREAD_DUR",
+          "units": "years",
+          "verified": true,
+          "verification_basis": "USD-index sensitivity to OAS holding the Treasury curve fixed; duration in years.",
+          "definition_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044912_7451b33f\\field_candidates.csv",
+          "definition_evidence_sha256": "5b8f838f04adb3584ddf3807993ae16e10afdccff2d89dfdc7eac392f15f9ff0"
+        },
+        "oas": {
+          "field": "INDEX_OAS_TSY_BP",
+          "units": "basis_points",
+          "verified": true,
+          "verification_basis": "Definition explicitly specifies basis points; do not use percentage INDEX_OAS_TSY with a bps scale.",
+          "definition_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044912_7451b33f\\field_candidates.csv",
+          "definition_evidence_sha256": "5b8f838f04adb3584ddf3807993ae16e10afdccff2d89dfdc7eac392f15f9ff0"
+        }
+      },
+      "verification_status": "benchmark_approved_analytics_partial",
+      "reported_benchmark": "Bloomberg US Aggregate",
+      "definition_note": "Benchmark definition accepted by user with archived Bloomberg metadata and documented index identity. Analytics have separate field-level verification; expected-return assumptions are not approved.",
+      "definition_source": "https://www.bloomberg.com/markets/rates-bonds/bloomberg-fixed-income-indices",
+      "verification_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044515_53edb1b4\\bloomberg_reference.csv",
+      "verification_evidence_sha256": "f10c223ef5685de47426badfdf7b65172c1c28aad58c0f346750881b72aa604a",
+      "verification_basis": "User approval on October 7 2026, documented ticker definitions and archived NAME/CRNCY/PX_LAST. Analytics and return model are not approved.",
+      "analytics_review_note": "Convexity scaling remains unverified and is not configured. Yield-to-worst is an input, not an approved carry assumption."
+    },
+    {
+      "key": "inflation_linked",
+      "name": "Bloomberg TIPS (1-10Y)",
+      "ticker": "LTI1TRUU Index",
+      "verified": true,
+      "currency_exposure": "USD",
+      "model": "us_real_plus_cpi",
+      "total_return_field": "PX_LAST",
+      "analytics": {},
+      "verification_status": "benchmark_approved_analytics_pending",
+      "reported_benchmark": "Bloomberg US TIPS 1-10y Index",
+      "definition_note": "Benchmark definition accepted by user with archived Bloomberg metadata and documented index identity. Analytics have separate field-level verification; expected-return assumptions are not approved.",
+      "definition_source": "https://www.flexshares.com/us/en/individual/funds/tipb",
+      "verification_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044515_53edb1b4\\bloomberg_reference.csv",
+      "verification_evidence_sha256": "f10c223ef5685de47426badfdf7b65172c1c28aad58c0f346750881b72aa604a",
+      "verification_basis": "User approval on October 7 2026, documented ticker definitions and archived NAME/CRNCY/PX_LAST. Analytics and return model are not approved.",
+      "analytics_review_note": "Generic index YTW/YTM is not approved as real yield. Real-yield definition and real-duration exposure require separate verification."
+    },
+    {
+      "key": "high_yield",
+      "name": "Bloomberg US Corporate High Yield",
+      "ticker": "LF98TRUU Index",
+      "verified": true,
+      "currency_exposure": "USD",
+      "model": "us_high_yield_credit",
+      "total_return_field": "PX_LAST",
+      "analytics": {
+        "yield_to_worst": {
+          "field": "INDEX_YIELD_TO_WORST",
+          "units": "percent",
+          "verified": true,
+          "verification_basis": "Index weighted yield to worst, quoted in percentage points; not automatically expected carry.",
+          "definition_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044912_7451b33f\\field_candidates.csv",
+          "definition_evidence_sha256": "5b8f838f04adb3584ddf3807993ae16e10afdccff2d89dfdc7eac392f15f9ff0"
+        },
+        "rate_duration": {
+          "field": "INDEX_OAD_TSY",
+          "units": "years",
+          "verified": true,
+          "verification_basis": "Option-adjusted par-curve rate duration holding OAS fixed; duration in years.",
+          "definition_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044912_7451b33f\\field_candidates.csv",
+          "definition_evidence_sha256": "5b8f838f04adb3584ddf3807993ae16e10afdccff2d89dfdc7eac392f15f9ff0"
+        },
+        "spread_duration": {
+          "field": "INDEX_BLENDED_SPREAD_DUR",
+          "units": "years",
+          "verified": true,
+          "verification_basis": "USD-index sensitivity to OAS holding the Treasury curve fixed; duration in years.",
+          "definition_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044912_7451b33f\\field_candidates.csv",
+          "definition_evidence_sha256": "5b8f838f04adb3584ddf3807993ae16e10afdccff2d89dfdc7eac392f15f9ff0"
+        },
+        "oas": {
+          "field": "INDEX_OAS_TSY_BP",
+          "units": "basis_points",
+          "verified": true,
+          "verification_basis": "Definition explicitly specifies basis points; do not use percentage INDEX_OAS_TSY with a bps scale.",
+          "definition_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044912_7451b33f\\field_candidates.csv",
+          "definition_evidence_sha256": "5b8f838f04adb3584ddf3807993ae16e10afdccff2d89dfdc7eac392f15f9ff0"
+        }
+      },
+      "verification_status": "benchmark_approved_analytics_reviewed",
+      "reported_benchmark": "Bloomberg US Corporate High Yield",
+      "previously_requested_benchmark": "ICE BofA US Cash Pay High Yield Constrained (BB-B)",
+      "definition_note": "Benchmark definition accepted by user with archived Bloomberg metadata and documented index identity. Analytics have separate field-level verification; expected-return assumptions are not approved.",
+      "definition_source": "https://www.bloomberg.com/markets/rates-bonds/bloomberg-fixed-income-indices",
+      "verification_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044515_53edb1b4\\bloomberg_reference.csv",
+      "verification_evidence_sha256": "f10c223ef5685de47426badfdf7b65172c1c28aad58c0f346750881b72aa604a",
+      "verification_basis": "User approval on October 7 2026, documented ticker definitions and archived NAME/CRNCY/PX_LAST. Analytics and return model are not approved.",
+      "analytics_review_note": "Convexity scaling remains unverified and is not configured. Yield-to-worst is an input, not an approved carry assumption."
+    },
+    {
+      "key": "global_ex_us",
+      "name": "Bloomberg Global Aggregate ex USD Hedged",
+      "ticker": "LG38TRUH Index",
+      "verified": true,
+      "currency_exposure": "USD_hedged",
+      "model": "foreign_curves_usd_hedged",
+      "total_return_field": "PX_LAST",
+      "analytics": {
+        "yield": {
+          "field": "INDEX_YIELD_TO_WORST",
+          "units": "percent",
+          "verified": true,
+          "verification_basis": "Index weighted yield to worst, quoted in percentage points; not automatically expected carry.",
+          "definition_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044912_7451b33f\\field_candidates.csv",
+          "definition_evidence_sha256": "5b8f838f04adb3584ddf3807993ae16e10afdccff2d89dfdc7eac392f15f9ff0"
+        },
+        "rate_duration": {
+          "field": "INDEX_OAD_TSY",
+          "units": "years",
+          "verified": true,
+          "verification_basis": "Option-adjusted par-curve rate duration holding OAS fixed; duration in years.",
+          "definition_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044912_7451b33f\\field_candidates.csv",
+          "definition_evidence_sha256": "5b8f838f04adb3584ddf3807993ae16e10afdccff2d89dfdc7eac392f15f9ff0"
+        }
+      },
+      "verification_status": "benchmark_approved_analytics_partial",
+      "reported_benchmark": "Bloomberg Global Aggregate ex-USD Total Return USD Hedged",
+      "definition_note": "Benchmark definition accepted by user with archived Bloomberg metadata and documented index identity. Analytics have separate field-level verification; expected-return assumptions are not approved.",
+      "definition_source": "https://assets.bbhub.io/professional/sites/27/3121_20240410.pdf",
+      "verification_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044515_53edb1b4\\bloomberg_reference.csv",
+      "verification_evidence_sha256": "f10c223ef5685de47426badfdf7b65172c1c28aad58c0f346750881b72aa604a",
+      "verification_basis": "User approval on October 7 2026, documented ticker definitions and archived NAME/CRNCY/PX_LAST. Analytics and return model are not approved.",
+      "analytics_review_note": "Convexity scaling remains unverified and is not configured. Yield-to-worst is an input, not an approved carry assumption. Yield and rate duration describe underlying foreign bonds, not USD-hedged carry or US Treasury exposure. Spread duration and Treasury OAS returned no history; do not fill them with zero."
+    },
+    {
+      "key": "em_debt",
+      "name": "Bloomberg Emerging Market USD Aggregate",
+      "ticker": "EMUSTRUU Index",
+      "verified": true,
+      "currency_exposure": "USD",
+      "model": "usd_em_aggregate_credit",
+      "total_return_field": "PX_LAST",
+      "analytics": {
+        "yield": {
+          "field": "INDEX_YIELD_TO_WORST",
+          "units": "percent",
+          "verified": true,
+          "verification_basis": "Index weighted yield to worst, quoted in percentage points; not automatically expected carry.",
+          "definition_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044912_7451b33f\\field_candidates.csv",
+          "definition_evidence_sha256": "5b8f838f04adb3584ddf3807993ae16e10afdccff2d89dfdc7eac392f15f9ff0"
+        },
+        "rate_duration": {
+          "field": "INDEX_OAD_TSY",
+          "units": "years",
+          "verified": true,
+          "verification_basis": "Option-adjusted par-curve rate duration holding OAS fixed; duration in years.",
+          "definition_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044912_7451b33f\\field_candidates.csv",
+          "definition_evidence_sha256": "5b8f838f04adb3584ddf3807993ae16e10afdccff2d89dfdc7eac392f15f9ff0"
+        },
+        "spread_duration": {
+          "field": "INDEX_BLENDED_SPREAD_DUR",
+          "units": "years",
+          "verified": true,
+          "verification_basis": "USD-index sensitivity to OAS holding the Treasury curve fixed; duration in years.",
+          "definition_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044912_7451b33f\\field_candidates.csv",
+          "definition_evidence_sha256": "5b8f838f04adb3584ddf3807993ae16e10afdccff2d89dfdc7eac392f15f9ff0"
+        },
+        "spread": {
+          "field": "INDEX_OAS_TSY_BP",
+          "units": "basis_points",
+          "verified": true,
+          "verification_basis": "Definition explicitly specifies basis points; do not use percentage INDEX_OAS_TSY with a bps scale. EM spread driver is explicitly Treasury OAS, not EMBI spread-to-benchmark.",
+          "definition_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044912_7451b33f\\field_candidates.csv",
+          "definition_evidence_sha256": "5b8f838f04adb3584ddf3807993ae16e10afdccff2d89dfdc7eac392f15f9ff0"
+        }
+      },
+      "verification_status": "benchmark_approved_analytics_reviewed",
+      "reported_benchmark": "Bloomberg Emerging Market USD Aggregate",
+      "previously_requested_benchmark": "JP Morgan EMBI Global Diversified",
+      "definition_note": "Benchmark definition accepted by user with archived Bloomberg metadata and documented index identity. Analytics have separate field-level verification; expected-return assumptions are not approved.",
+      "definition_source": "https://data.bloomberglp.com/professional/sites/27/2024-10-11-Update-on-Consultation-on-Bloomberg-Fixed-Income-Indices.pdf",
+      "verification_evidence": "C:\\Users\\Jeff\\Python\\CMAs\\data\\20261007T044515_53edb1b4\\bloomberg_reference.csv",
+      "verification_evidence_sha256": "f10c223ef5685de47426badfdf7b65172c1c28aad58c0f346750881b72aa604a",
+      "verification_basis": "User approval on October 7 2026, documented ticker definitions and archived NAME/CRNCY/PX_LAST. Analytics and return model are not approved.",
+      "analytics_review_note": "Convexity scaling remains unverified and is not configured. Yield-to-worst is an input, not an approved carry assumption."
+    }
+  ]
+}

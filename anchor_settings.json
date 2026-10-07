@@ -1,6 +1,6 @@
 {
   "status": "research_draft_not_approved",
-  "primary_candidate": "hlw_latest",
+  "primary_candidate": "hlw_median20",
   "policy_to_3m_basis_bps": 0.0,
   "core_to_headline_pce_adjustment_bps": 0.0,
   "slope_statistic": "mean",
