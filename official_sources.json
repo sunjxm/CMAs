@@ -1,0 +1,9 @@
+{
+  "sources": [
+    {"key":"hlw_current","filename":"hlw_current.xlsx","format":"xlsx","url":"https://www.newyorkfed.org/medialibrary/media/research/economists/williams/data/Holston_Laubach_Williams_current_estimates.xlsx","definition":"Current-vintage real neutral-rate model estimates; revised history, not a historical point-in-time backtest input."},
+    {"key":"hlw_realtime","filename":"hlw_realtime.xlsx","format":"xlsx","url":"https://www.newyorkfed.org/medialibrary/media/research/economists/williams/data/Holston_Laubach_Williams_real_time_estimates.xlsx","definition":"Published real-time HLW estimates; inspect release dates and vintage coverage before backtesting."},
+    {"key":"lw_current","filename":"lw_current.xlsx","format":"xlsx","url":"https://www.newyorkfed.org/medialibrary/media/research/economists/williams/data/Laubach_Williams_current_estimates.xlsx","definition":"Current-vintage LW real neutral-rate model estimates."},
+    {"key":"spf_inflation","filename":"spf_inflation.xlsx","format":"xlsx","url":"https://www.philadelphiafed.org/-/media/FRBP/Assets/Surveys-And-Data/survey-of-professional-forecasters/historical-data/Inflation.xlsx","definition":"Survey inflation forecasts; distinguish CPI/PCE and annual average forecast horizons."},
+    {"key":"acm","filename":"acm.xls","format":"xls","url":"https://www.newyorkfed.org/medialibrary/media/research/data_indicators/ACMTermPremium.csv","definition":"Model-estimated Treasury zero-coupon yields, expected-rate components and term premiums; not par yields. The publisher's .csv URL currently returns an XLS workbook."}
+  ]
+}

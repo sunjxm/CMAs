@@ -1,0 +1,20 @@
+{
+  "notes": "Candidate Bloomberg identifiers. Confirm NAME, field definition, units and methodology in the Terminal before setting verified=true. Generic government yields are not assumed to be Treasury CMT par yields. One month is a proxy for the 30-day node, not an exact 30-day security.",
+  "series": [
+    {"key":"ust_1m","ticker":"USGG1M Index","field":"PX_LAST","group":"treasury","units":"percent","curve_type":"benchmark_yield","maturity_years":0.08333333333333333},
+    {"key":"ust_3m","ticker":"USGG3M Index","field":"PX_LAST","group":"treasury","units":"percent","curve_type":"benchmark_yield","maturity_years":0.25},
+    {"key":"ust_6m","ticker":"USGG6M Index","field":"PX_LAST","group":"treasury","units":"percent","curve_type":"benchmark_yield","maturity_years":0.5},
+    {"key":"ust_1y","ticker":"USGG12M Index","field":"PX_LAST","group":"treasury","units":"percent","curve_type":"benchmark_yield","maturity_years":1.0},
+    {"key":"ust_2y","ticker":"USGG2YR Index","field":"PX_LAST","group":"treasury","units":"percent","curve_type":"benchmark_yield","maturity_years":2.0},
+    {"key":"ust_3y","ticker":"USGG3YR Index","field":"PX_LAST","group":"treasury","units":"percent","curve_type":"benchmark_yield","maturity_years":3.0},
+    {"key":"ust_5y","ticker":"USGG5YR Index","field":"PX_LAST","group":"treasury","units":"percent","curve_type":"benchmark_yield","maturity_years":5.0},
+    {"key":"ust_7y","ticker":"USGG7YR Index","field":"PX_LAST","group":"treasury","units":"percent","curve_type":"benchmark_yield","maturity_years":7.0},
+    {"key":"ust_10y","ticker":"USGG10YR Index","field":"PX_LAST","group":"treasury","units":"percent","curve_type":"benchmark_yield","maturity_years":10.0},
+    {"key":"ust_20y","ticker":"USGG20YR Index","field":"PX_LAST","group":"treasury","units":"percent","curve_type":"benchmark_yield","maturity_years":20.0},
+    {"key":"ust_30y","ticker":"USGG30YR Index","field":"PX_LAST","group":"treasury","units":"percent","curve_type":"benchmark_yield","maturity_years":30.0},
+    {"key":"fed_funds","ticker":"FEDL01 Index","field":"PX_LAST","group":"cash","units":"percent","curve_type":"overnight_rate"},
+    {"key":"sofr","ticker":"SOFRRATE Index","field":"PX_LAST","group":"cash","units":"percent","curve_type":"overnight_rate","required":false},
+    {"key":"tips_10y","ticker":"USGGT10Y Index","field":"PX_LAST","group":"real_rates","units":"percent","curve_type":"real_benchmark_yield","maturity_years":10.0,"required":false},
+    {"key":"tips_30y","ticker":"USGGT30Y Index","field":"PX_LAST","group":"real_rates","units":"percent","curve_type":"real_benchmark_yield","maturity_years":30.0,"required":false}
+  ]
+}
