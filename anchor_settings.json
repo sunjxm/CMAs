@@ -1,0 +1,13 @@
+{
+  "status": "research_draft_not_approved",
+  "primary_candidate": "hlw_latest",
+  "policy_to_3m_basis_bps": 0.0,
+  "core_to_headline_pce_adjustment_bps": 0.0,
+  "slope_statistic": "mean",
+  "slope_windows_years": [10, 20, 30],
+  "primary_slope_window_years": 30,
+  "minimum_paired_months": 60,
+  "rstar_smoothing_quarters": 20,
+  "maximum_macro_age_months": 12,
+  "note": "Zero basis adjustments are provisional assumptions, not estimated facts. Candidates require committee review; source release dates have not been mapped."
+}

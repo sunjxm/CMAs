@@ -32,12 +32,22 @@ no mixed dates or curve types, and meaningful data-quality tests. The official
 Treasury endpoint is separately checked; a public-source access failure must
 not silently switch to generic Bloomberg yields.
 
-## Phase 2: Equilibrium Inputs And Anchor Estimation
+## Phase 2: Equilibrium Inputs And Anchor Estimation (Research Stage Implemented)
 
-Planned modules: source_parsers.py, estimate_anchors.py.
+Implemented modules: source_parsers.py, estimate_anchors.py, analysis.py.
+Entry tasks: process-inputs and anchor-review. Documentation: docs/METHODOLOGY.md
+and docs/METHODOLOGY_LOG.md; every run preserves a numerical run_summary.md.
 
-1. Parse downloaded HLW/LW, ACM and SPF files with explicit column/sheet mappings
-   and tests. Add the policy-rate survey and CBO files once their relevant
+Implemented: current and real-time HLW, one-sided LW, SPF CPI/PCE10, and monthly
+ACM parsing; source checksum and decomposition checks; same-date monthly par
+spreads over 10/20/30-year windows; separate HLW/LW macro candidates; draft par
+anchors and component tables. Source release dates remain unmapped. Policy/bill
+and headline/core adjustments are exposed but default to unapproved zero values.
+
+Outstanding review and extensions:
+
+1. Review the implemented HLW/LW, ACM and SPF mappings and diagnostics.
+   Add the policy-rate survey and CBO files once their relevant
    definitions are selected. Preserve raw files and source vintages.
    Enter FOMC longer-run estimates from a dated SEP release; automated parsing
    can follow once the initial release schema is confirmed.

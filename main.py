@@ -19,17 +19,26 @@ FREQUENCY = "monthly"
 GROUPS = ("treasury", "cash", "real_rates")
 PROJECT_DIR = Path(__file__).resolve().parent
 DATA_DIR = PROJECT_DIR / "data"
-TASKS = ("check", "metadata", "history", "treasury-par", "official-inputs", "all")
+DOWNLOAD_TASKS = ("check", "metadata", "history", "treasury-par", "official-inputs")
+TASKS = (*DOWNLOAD_TASKS, "process-inputs", "anchor-review", "all")
 
 
 def run(task=DEFAULT_TASK, start=START_DATE, end=END_DATE, groups=GROUPS,
-        output=DATA_DIR, host="localhost", port=8194, frequency=FREQUENCY):
+        output=DATA_DIR, host="localhost", port=8194, frequency=FREQUENCY,
+        official_archive=None, treasury_bundle=None, settings=None):
     """Run a selected task or the full data pipeline, independent of working directory."""
     if task not in TASKS:
         raise ValueError(f"Unknown task: {task}. Choose one of {TASKS}.")
+    if task in {"process-inputs", "anchor-review"}:
+        if frequency != "monthly":
+            raise ValueError("Input processing and anchor review use monthly calibration only.")
+        from cma_curve.analysis import run_analysis
+        return run_analysis(task, start, end, output, settings or PROJECT_DIR / "anchor_settings.json",
+                            official_archive, treasury_bundle,
+                            progress=lambda message: print(message, flush=True))
     if not groups:
         raise ValueError("Select at least one Bloomberg data group.")
-    steps = TASKS[:-1] if task == "all" else (task,)
+    steps = DOWNLOAD_TASKS if task == "all" else (task,)
     client = BloombergClient(host, port)
     for step in steps:
         print(f"\nCMA inputs: {step}", flush=True)
@@ -55,8 +64,12 @@ def main(argv=None):
     parser.add_argument("--output", type=Path, default=DATA_DIR)
     parser.add_argument("--host", default="localhost")
     parser.add_argument("--port", type=int, default=8194)
+    parser.add_argument("--official-archive", type=Path)
+    parser.add_argument("--treasury-bundle", type=Path)
+    parser.add_argument("--settings", type=Path)
     args = parser.parse_args(argv)
-    run(args.task, args.start, args.end, args.groups, args.output, args.host, args.port, args.frequency)
+    run(args.task, args.start, args.end, args.groups, args.output, args.host, args.port, args.frequency,
+        args.official_archive, args.treasury_bundle, args.settings)
 
 
 if __name__ == "__main__":

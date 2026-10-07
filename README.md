@@ -1,8 +1,10 @@
 # CMA Yield Curve Inputs
 
-The first implementation is a data layer for a 30-plus-year US CMA model. It
-does not yet select equilibrium yields, bootstrap discount factors, or calculate
-bond returns. Those steps and their acceptance checks are in PLAN.md.
+This project retrieves inputs and generates research-draft equilibrium yield
+candidates for a 30-plus-year US CMA model. It does not yet approve anchors,
+project curve paths, bootstrap discount factors, or calculate bond returns.
+The evolving methodology is in docs/METHODOLOGY.md, with a development trail in
+docs/METHODOLOGY_LOG.md. Remaining phases are described in PLAN.md.
 
 ## Run In Your Existing Environment
 
@@ -27,7 +29,9 @@ relative to the module, so running from another folder works.
 
 Your Bloomberg-enabled environment was found at
 `C:\Users\Jeff\miniconda3\envs\my_env\python.exe`, with xbbg 1.5.0,
-blpapi 3.26.8.1 and pandas 3.0.6. No packages were installed or upgraded.
+blpapi 3.26.8.1 and pandas 3.0.6. The official processing stage additionally
+uses openpyxl and xlrd. Install extras on another machine with
+`python -m pip install -e ".[bloomberg,official]"` after activating its environment.
 Run from this directory, or use the full script path. An editable installation
 is optional; the examples below work without one.
 
@@ -125,14 +129,102 @@ multiple sources and estimates rather than silently averaging them.
 Priority inputs are FOMC longer-run nominal fed funds, survey longer-run nominal
 fed funds, long-run inflation, HLW/LW real neutral rates, and ACM term premiums.
 `official-inputs` downloads and archives HLW current and real-time workbooks,
-LW current estimates, SPF inflation and ACM data using `official_sources.json`.
+LW current estimates, SPF CPI and PCE inflation, and ACM data using `official_sources.json`.
 It records source URLs, checks file formats, and stores checksums. Parsing those
-files into approved anchor estimates is the next step; raw downloads are not
+files into research-draft candidates is now implemented; raw downloads are not
 automatically averaged or treated as historical release vintages.
 Avoid guessing Bloomberg survey tickers or historic-release fields. OIS/futures
 are optional phase-two inputs and are deliberately not prepopulated with
 unverified identifiers. Extend the catalog after selecting actual contracts and
 definitions; contract-roll rules require separate work.
+
+## Process Inputs And Review Anchors
+
+After downloading official sources and monthly Treasury par history:
+
+```powershell
+python main.py --task process-inputs
+python main.py --task anchor-review
+```
+
+Both run offline and create new dated folders under data/. Anchor review includes
+source parsing, so running process-inputs first is optional. The default discovers
+the most recently retrieved official and Treasury bundles by manifest type.
+An older five-source archive lacks PCE10: rerun official-inputs to obtain it.
+A failed or incomplete latest bundle fails visibly rather than silently choosing
+an older snapshot. For a reproducible formal run, pin the inputs:
+
+```powershell
+python main.py --task anchor-review --official-archive data\20261007T031202_official_f559f005 --treasury-bundle data\20261007T030129_567ade64
+```
+
+`anchor_settings.json` holds provisional source, smoothing, adjustment, and
+historical spread choices. `--settings` accepts another settings file. Neither
+run task is included in --task all, which continues to download inputs only.
+These analysis tasks require monthly calibration; they do not use Bloomberg.
+
+Each run saves official_observations.csv, source_inventory.csv, run_summary.md,
+and a manifest with hashes. Anchor review also saves candidate_anchors.csv,
+macro_components.csv, slope_diagnostics.csv, acm_diagnostics.csv, and
+starting_par_curve.csv. Original raw archives and earlier run reports are retained.
+
+Quarterly inputs are not expanded into monthly pseudo-observations. Release
+dates remain unmapped and all generated candidates are research drafts, not
+historically available inputs or approved assumptions. Review the methodology
+and comparison tables before adopting the numbers. Source histories and
+data/ exports remain local and are not needed to version-control the code.
+
+## Word Review Copies
+
+`convert_md_to_docx.py` turns Markdown into editable Word documents with a clean
+report style. It preserves source Markdown, headings, emphasis, external links,
+lists, tables, literal code blocks, and native editable Word equations. Wide tables automatically select
+landscape pages. It requires neither Word nor a Bloomberg connection to convert.
+Images and internal anchor links are not supported and fail visibly rather than
+silently disappearing. Raw HTML is treated as literal text, not executed.
+
+```powershell
+python -m pip install -e ".[documents]"
+python convert_md_to_docx.py
+```
+
+With no file arguments, the script selects docs/*.md and the latest anchor-review
+run_summary.md. Word copies go into docs/word/. To refresh existing copies:
+
+```powershell
+python convert_md_to_docx.py --overwrite
+```
+
+Select files, a folder, or quoted patterns; --all also includes project-root
+Markdown files such as README.md and PLAN.md:
+
+```powershell
+python convert_md_to_docx.py docs\METHODOLOGY.md --output docs\word --overwrite
+python convert_md_to_docx.py "docs\*.md" --output docs\word --overwrite
+python convert_md_to_docx.py --all --overwrite
+```
+
+Use --orientation portrait or landscape to override automatic page selection.
+Close a Word copy before overwriting it. Review edits made in Word do not flow
+back into Markdown automatically; incorporate agreed changes into the Markdown
+source, then regenerate. Convert duplicate filenames into separate output folders.
+
+Write inline LaTeX as `$r^{*}$` and display equations between `$$` delimiters on
+separate lines. Do not put formulas inside code fences or backticks: those remain
+literal code. Escape currency dollar signs as `\$` to avoid treating prices as
+math. For example:
+
+```markdown
+$$
+y_m(h) = a_m + \left[y_m(0) - a_m\right] 2^{-\frac{h}{H_m}}
+$$
+```
+
+The converter uses LaTeX-to-MathML-to-Office-Math conversion, so equations are
+editable in Word rather than images. It supports common mathematical notation,
+not complete LaTeX documents or custom macros. Conversion errors stop visibly;
+visually review complex expressions after exporting. Install the updated
+documents extra above on each machine before using equation conversion.
 
 ## References
 
