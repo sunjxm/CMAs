@@ -21,17 +21,46 @@ PROJECT_DIR = Path(__file__).resolve().parent
 DATA_DIR = PROJECT_DIR / "data"
 DOWNLOAD_TASKS = ("check", "metadata", "history", "treasury-par", "official-inputs")
 TASKS = (*DOWNLOAD_TASKS, "process-inputs", "anchor-review", "curve-projection",
-         "asset-review", "asset-metadata", "asset-history", "asset-analytics", "asset-analytics-probe", "asset-analytics-normalize", "tips-inputs", "bond-returns", "all")
+         "asset-review", "asset-metadata", "asset-history", "asset-analytics", "asset-analytics-probe", "asset-analytics-normalize", "tips-inputs", "bond-returns", "composition-inputs", "credit-review", "holding-returns", "global-hedge-review", "workbook-inputs", "foreign-cash", "all")
 
 
 def run(task=DEFAULT_TASK, start=START_DATE, end=END_DATE, groups=GROUPS,
         output=DATA_DIR, host="localhost", port=8194, frequency=FREQUENCY,
         official_archive=None, treasury_bundle=None, settings=None, review_bundle=None,
         projection_settings=None, asset_catalog=None, assets=None, return_settings=None,
-        curve_bundle=None, analytics_bundle=None, history_bundle=None):
+        curve_bundle=None, analytics_bundle=None, history_bundle=None, constituent_bundle=None,
+        global_hedge_inputs=None, loss_segments=None, spread_segments=None,
+        workbook=None, workbook_asof=None, workbook_rating_method=None,
+        foreign_cash_settings=None, foreign_cash_inputs=None, workbook_bundle=None):
     """Run a selected task or the full data pipeline, independent of working directory."""
     if task not in TASKS:
         raise ValueError(f"Unknown task: {task}. Choose one of {TASKS}.")
+    if task == "foreign-cash":
+        if frequency != "monthly":
+            raise ValueError("Foreign cash projection uses monthly steps.")
+        from cma_curve.foreign_cash import run_foreign_cash
+        return run_foreign_cash(output, foreign_cash_settings or PROJECT_DIR / "foreign_cash_settings.json",
+                                foreign_cash_inputs, workbook_bundle, curve_bundle)
+    if task == "workbook-inputs":
+        from cma_curve.workbook_inputs import run_workbook_inputs
+        return run_workbook_inputs(output, workbook or PROJECT_DIR / "BBG_bond_data.xlsx",
+                                   workbook_asof, workbook_rating_method)
+    if task == "composition-inputs":
+        from cma_curve.composition_inputs import fetch_composition_inputs
+        return fetch_composition_inputs(asset_catalog or PROJECT_DIR / "bond_assets.json", output,
+                                         BloombergClient(host, port))
+    if task in {"credit-review", "holding-returns", "global-hedge-review"}:
+        if frequency != "monthly":
+            raise ValueError("Fixed-income research inputs use monthly frequency.")
+        if task == "credit-review":
+            from cma_curve.credit_assumptions import run_credit_review
+            return run_credit_review(output, constituent_bundle, loss_segments_path=loss_segments,
+                                      spread_segments_path=spread_segments)
+        if task == "holding-returns":
+            from cma_curve.holding_returns import run_holding_returns
+            return run_holding_returns(output, curve_bundle)
+        from cma_curve.global_hedge import run_global_hedge_review
+        return run_global_hedge_review(output, global_hedge_inputs)
     if task == "bond-returns":
         if frequency != "monthly":
             raise ValueError("Bond return research uses monthly frequency.")
@@ -114,12 +143,25 @@ def main(argv=None):
     parser.add_argument("--curve-bundle", type=Path)
     parser.add_argument("--analytics-bundle", type=Path)
     parser.add_argument("--history-bundle", type=Path)
+    parser.add_argument("--constituent-bundle", type=Path)
+    parser.add_argument("--global-hedge-inputs", type=Path)
+    parser.add_argument("--loss-segments", type=Path)
+    parser.add_argument("--spread-segments", type=Path)
+    parser.add_argument("--workbook", type=Path)
+    parser.add_argument("--workbook-asof", help="Actual export observation date; never inferred from --end.")
+    parser.add_argument("--workbook-rating-method", help="Confirmed rating agency or composite definition.")
+    parser.add_argument("--foreign-cash-settings", type=Path)
+    parser.add_argument("--foreign-cash-inputs", type=Path)
+    parser.add_argument("--workbook-bundle", type=Path)
     parser.add_argument("--assets", nargs="+", help="Asset keys to review/download; defaults to all six.")
     args = parser.parse_args(argv)
     run(args.task, args.start, args.end, args.groups, args.output, args.host, args.port, args.frequency,
         args.official_archive, args.treasury_bundle, args.settings, args.review_bundle,
         args.projection_settings, args.asset_catalog, args.assets, args.return_settings,
-        args.curve_bundle, args.analytics_bundle, args.history_bundle)
+        args.curve_bundle, args.analytics_bundle, args.history_bundle,
+        args.constituent_bundle, args.global_hedge_inputs, args.loss_segments, args.spread_segments,
+        args.workbook, args.workbook_asof, args.workbook_rating_method,
+        args.foreign_cash_settings, args.foreign_cash_inputs, args.workbook_bundle)
 
 
 if __name__ == "__main__":

@@ -118,6 +118,40 @@ Validation: 87 tests pass, including 16 new return-engine tests and an end-to-en
 
 Detailed LaTeX formulas, choices, diagnostic results and outstanding approvals are in docs/INVESTMENT_GRADE_RETURNS.md. The other four sleeves remain unimplemented; input availability is not silently promoted to return-model approval.
 
+## October 7, 2026 - Handbook-Informed Credit, Holding Returns And Global Hedging
+
+Status: implemented research extensions, not approved CMAs. Existing index return paths are unchanged.
+
+Added current composition acquisition and a composition-aware credit review, segment loss/spread calculators with CSV imports, QuantLib Treasury holding-return comparison and a global USD hedge-carry calculator. Production weighted lists contain 2,141 short-term, 1,949 HY and 2,161 EM members, with 6,201 unique constituent identifiers queried. US Aggregate and Global ex-USD returned no usable weighted list; unweighted 2,500-member responses were not treated as complete portfolios. Production inputs are in data/20261007T053541_d6360df5.
+
+Credit review pins S&P's 1981-2024 annual corporate default frequencies from the March 2025 study, with illustrative recovery sensitivities. Unresolved ratings and noncorporate populations are not zero-filled or rescaled. Full-portfolio losses remain unavailable; current October 7 composition is not substituted for September endpoint weights. Credit results and templates are in data/20261007T053717_3722789d.
+
+QuantLib 1.43 was installed in my_env and registered as an optional pricing dependency. The module bootstraps discount factors under documented synthetic-instrument conventions, ages a constant-tenor Treasury bond for one year, collects coupons and reprices its sale value. The 360 annual observations and nonoverlapping attribution are in data/20261007T053239_holding-returns_74929205. It is not a credit-index replica and does not yet replace the earlier first-order index return model.
+
+Global hedge approximation uses weighted foreign local returns plus USD-minus-foreign cash-rate carry, with no invented FX forecast or currency weights. The task archives missing-input readiness and a template in data/20261007T053717_c7933b3d; no global forecast is generated without complete inputs. Sector/rating and currency/local-analytics exports for the two unavailable weighted lists have been requested.
+
+Detailed LaTeX formulas, assumptions, limitations, commands and sources are in docs/HANDBOOK_IMPLEMENTATION.md. Validation: all 100 tests pass, including 13 extension tests. Live production acquisition, credit review, holding-return comparison and global readiness tasks succeed. Further work needs historical endpoint composition, matched credit loss/recovery populations, segment spread histories and foreign return/cash paths.
+
+## October 7, 2026 - User-Supplied Bloomberg Breakdown Import
+
+Status: research inputs imported; no forecast or settings changes. The new workbook supplies US Aggregate sector/rating marginals and Global ex-USD currency weights/durations. Added cma_curve/workbook_inputs.py and main.py --task workbook-inputs, preserving source cells, raw percentage-point units, missing markers and hashes. Source workbook is unchanged.
+
+Final archive data/20261007T055252_78d41204 records the user's confirmed September 30, 2026 date and Bloomberg composite ratings. It contains normalized observations, coverage, separate sector/rating weights, joined currency inputs and a blank cash-rate review template. Earlier undated import data/20261007T055053_cf5d0c48 is retained but superseded for this source review. Sector weights total 99.97%, ratings 100%, currencies 99.99%. Rounding residuals are recorded, not rescaled. Rating NR plus Unclassified is 72.05%; sector and rating marginals do not identify corporate-only rating composition. No loss estimate is generated.
+
+Positive-weight currency duration coverage is 99.84%; local-yield coverage is zero. The only numeric yields belong to zero-weight ITL/DEM exposures and are not used. Proposed resource-efficient global approach uses aggregate underlying yield and a currency-weighted cash differential for hedge carry, while keeping foreign rate normalization separate. No foreign rate/cash path is invented. Date and rating provenance are resolved; mapping composite ratings to agency default frequencies, duration definition, Unclassified currency and exact weight reconciliation remain outstanding.
+
+Detailed findings, LaTeX formulas, limitations and commands are in docs/WORKBOOK_INPUT_REVIEW.md. All 105 tests pass, including five new importer tests. Actual workbook import succeeded. Existing credit review and bond-return scenarios remain unchanged.
+
+## October 7, 2026 - Simplified Foreign Cash Basket And Hedge Overlay
+
+Status: research engine implemented; foreign cash/anchor calibration outstanding. Added cma_curve/foreign_cash.py, foreign_cash_settings.json and main.py --task foreign-cash. At the user's request, AUD and CHF are separate components alongside EUR, CNY, JPY, GBP and CAD. The seven named weights sum to 91.31%; Other is 8.69%, including the remaining displayed currency weights, Unclassified and the explicit 0.01 percentage point rounding residual. Raw workbook import remains unchanged.
+
+The model inherits US BC_1MONTH cash, selected median20 anchor, the selected US inflation assumption and monthly 3/5/8-year half-life paths. Foreign cash anchors equal US cash anchor plus inflation differences and explicit real-cash adjustments. Foreign rates converge on the same half-life. USD-minus-weighted-foreign cash plus signed basis minus cost gives annualized hedge carry; beginning-period carry divided by twelve is an additive monthly overlay, not standalone bond return or CAGR. Foreign anchor +/-50bp cases are illustrative sensitivities.
+
+The first live run, data/20261007T130543_7d38a78e, generated inputs/foreign_cash_assumptions.csv and an archived missing-input review without forecasts. No foreign cash/inflation numbers were invented. Existing editable inputs are never overwritten, source dates/hashes are checked, and no bond-return settings changed. Bloomberg foreign cash identifier verification, Other calibration, anchor review and basis/cost assumptions remain next steps.
+
+Detailed LaTeX formulas, weights, commands and limitations are in docs/FOREIGN_CASH_BASKET.md. All 113 tests pass, including eight new foreign-cash tests and a complete synthetic-input pipeline test covering first-month timing and preserved inputs. Synthetic test values are not used in live calibration.
+
 ## Future Entry Template
 
 ### Date And Change Title

@@ -1,0 +1,11 @@
+{
+  "status": "research_draft_not_approved",
+  "major_currencies": ["EUR", "CNY", "JPY", "GBP", "CAD", "AUD", "CHF"],
+  "usd_cash_key": "BC_1MONTH",
+  "assumptions_file": "inputs/foreign_cash_assumptions.csv",
+  "weight_policy": "major_raw_weights_other_residual",
+  "foreign_anchor_sensitivities_bps": [-50, 0, 50],
+  "basis_adjustment_bps": 0,
+  "implementation_cost_bps": 0,
+  "note": "Other includes all remaining currencies, Unclassified and the displayed rounding residual. Zero basis/cost and zero template real-cash adjustments are provisional simplifications, not estimates. Use matched one-month cash proxies where available."
+}

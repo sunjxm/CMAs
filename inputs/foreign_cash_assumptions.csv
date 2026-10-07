@@ -1,0 +1,9 @@
+bucket,current_cash_decimal,current_cash_asof,inflation_anchor_decimal,real_cash_adjustment_bps,source,note
+EUR,,2026-09-30,,0.0,,Zero real-cash adjustment is provisional; specify cash convention and anchor rationale.
+CNY,,2026-09-30,,0.0,,Zero real-cash adjustment is provisional; specify cash convention and anchor rationale.
+JPY,,2026-09-30,,0.0,,Zero real-cash adjustment is provisional; specify cash convention and anchor rationale.
+GBP,,2026-09-30,,0.0,,Zero real-cash adjustment is provisional; specify cash convention and anchor rationale.
+CAD,,2026-09-30,,0.0,,Zero real-cash adjustment is provisional; specify cash convention and anchor rationale.
+AUD,,2026-09-30,,0.0,,Zero real-cash adjustment is provisional; specify cash convention and anchor rationale.
+CHF,,2026-09-30,,0.0,,Zero real-cash adjustment is provisional; specify cash convention and anchor rationale.
+Other,,2026-09-30,,0.0,,Zero real-cash adjustment is provisional; specify cash convention and anchor rationale.

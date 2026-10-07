@@ -289,6 +289,39 @@ Run in activated `my_env`. Uses archived curves and reviewed index analytics off
 
 These are draft deterministic scenarios. The gross baseline has no credit losses or fees; spread/loss cases are sensitivities. See `docs/INVESTMENT_GRADE_RETURNS.md`. Other sleeves are not generated, and `--task all` remains download-only.
 
+## Handbook-Informed Extensions
+
+```powershell
+python main.py --task composition-inputs
+python main.py --task credit-review
+python main.py --task holding-returns
+python main.py --task global-hedge-review
+```
+
+`composition-inputs` downloads current weighted constituents and metadata where Bloomberg supplies complete weights; it does not fetch historical month-end composition. `credit-review` retains unresolved exposure and exports segment-input templates. `holding-returns` bootstraps synthetic Treasury discount curves with QuantLib and compares coupon/aging/normalization returns; it does not replace credit-index forecasts. `global-hedge-review` produces no forecast until complete foreign return, cash and currency inputs are supplied.
+
+Install the optional pricing library on another machine with `pip install -e ".[pricing]"`. CSV inputs can be supplied with `--loss-segments`, `--spread-segments` and `--global-hedge-inputs`. See `docs/HANDBOOK_IMPLEMENTATION.md` for schemas, reproduction and outstanding data. All outputs remain research-only.
+
+## Bloomberg Breakdown Workbook
+
+```powershell
+python main.py --task workbook-inputs
+```
+
+Reads `BBG_bond_data.xlsx` at the project root without modifying it. Archives sector/rating marginals, currency weights and currency analytics with source cells, missing-value coverage and hashes. It does not infer the observation date from `--end`, rescale rounded weights, turn missing local yields into zero or change forecast assumptions. Optional `--workbook`, `--workbook-asof` and `--workbook-rating-method` specify a different file and confirmed provenance. Requires the `official` extra's openpyxl dependency.
+
+See `docs/WORKBOOK_INPUT_REVIEW.md` for findings, the cash-rate review template and the resource-efficient global carry/hedge proposal. A snapshot is not a historical series, and separate sector/rating tables are not a joint credit distribution.
+
+## Foreign Cash Basket And USD Hedge Carry
+
+```powershell
+python main.py --task foreign-cash
+```
+
+Links the existing US one-month cash projection to seven named currencies (EUR, CNY, JPY, GBP, CAD, AUD, CHF) plus Other. The first run creates `inputs/foreign_cash_assumptions.csv` with blank cash/inflation inputs and explicit provisional zero real-cash adjustments; existing files are never overwritten. Fill reviewed inputs and rerun to produce monthly cash paths and an additive USD hedge overlay, not a global bond total-return forecast.
+
+Configuration is in `foreign_cash_settings.json`. Inputs and archives can be pinned with `--foreign-cash-inputs`, `--foreign-cash-settings`, `--workbook-bundle` and `--curve-bundle`. The Other bucket explicitly absorbs remaining currency weights and the displayed rounding residual. See `docs/FOREIGN_CASH_BASKET.md` for LaTeX formulas, units, conventions, calibration and audit trail.
+
 ## References
 
 - [xbbg request interface](https://xbbg.org/python/quickstart)

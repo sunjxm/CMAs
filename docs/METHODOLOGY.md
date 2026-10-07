@@ -2,9 +2,9 @@
 
 ## Document Control
 
-Version: 0.6, working methodology draft. Updated October 7, 2026 (US Eastern time).
+Version: 0.7, working methodology draft. Updated October 7, 2026 (US Eastern time).
 
-Status: data acquisition, source processing, candidate anchor estimation, baseline par-node projection, bond benchmark inputs, TIPS proxy inputs and first-order research return paths for Short Term Bond and US Aggregate are implemented. The selected primary research candidate is HLW median20. Equilibrium levels, convergence settings and return approximations are not committee-approved. Discount-factor construction, the other four return sleeves and final expected-return approval remain outstanding. See INVESTMENT_GRADE_RETURNS.md for the implemented research return engine and its limitations.
+Status: data acquisition, source processing, candidate anchors, par-node projections, benchmark/TIPS inputs and first-order research return paths for Short Term Bond and US Aggregate are implemented. Current composition review, credit loss/spread calculators, synthetic Treasury discount-factor/holding-return comparisons and a global hedge-carry calculator are also implemented; see HANDBOOK_IMPLEMENTATION.md. The selected primary research candidate is HLW median20. Equilibrium levels, convergence and return approximations are not committee-approved. Complete composition, credit assumptions, foreign inputs, index-level repricing and the other four completed return sleeves remain outstanding. See INVESTMENT_GRADE_RETURNS.md for the existing index return engine, which these research extensions have not silently replaced.
 
 This document separates implemented calculations from proposed extensions. Numerical review snapshots are preserved in dated run summaries rather than treated as permanent policy assumptions. The accompanying development log records the evolution of the process.
 
