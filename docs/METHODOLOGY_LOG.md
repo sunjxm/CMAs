@@ -152,6 +152,44 @@ The first live run, data/20261007T130543_7d38a78e, generated inputs/foreign_cash
 
 Detailed LaTeX formulas, weights, commands and limitations are in docs/FOREIGN_CASH_BASKET.md. All 113 tests pass, including eight new foreign-cash tests and a complete synthetic-input pipeline test covering first-month timing and preserved inputs. Synthetic test values are not used in live calibration.
 
+## October 7, 2026 - Finite-Time Curve Landing And Historical Surface Matrix
+
+Status: implemented research projection, not updated bond-return forecasts. At the user's request, half-life scenarios are now 3/5/10 years. Exponential convergence continues through year 25, followed by linear closure of the remaining gap to exact anchors at year 30. Anchors remain constant through year 40. The selected median20 method and historical Treasury slope estimator are unchanged.
+
+Projection archive: data/20261007T200125_curve-projection_c3c43bf2. Added cma_curve/curve_surfaces.py, curve_surface_settings.json and main.py --task curve-surfaces. Final surface archive: data/20261007T200421_curve-surfaces_d1a05074. The 5 x 3 matrix begins with September 30, 2026, followed by December 29, 2006 (mild inversion), December 31, 2009 (steep), July 31, 2020 (low yields), and June 30, 2023 (deep inversion). Historical common-date par inputs come from the existing Treasury archive. All initializations use the SAME current-vintage anchors and are not point-in-time forecasts.
+
+Surfaces show maturity on X, projection years 0-30 on Y and par yield percent on Z/color. Shared scales and five key nodes allow comparisons; linear maturity interpolation and quarterly display sampling are visualization-only. Full monthly values, diagnostic tables, source/output hashes, a static matrix, current-row PNG and an offline interactive HTML are retained. PNG layout was visually inspected and corrected. No connected browser was available for live interactive verification.
+
+All 120 tests pass; terminal/post-terminal anchors and complete grid outputs are also checked on the live archives. Existing archives are retained. Downstream asset returns were not rerun. Foreign-cash calibration remains paused; its helper was aligned with the shared source convergence rule to avoid inconsistent future behavior. LaTeX documentation is in docs/YIELD_CURVE_SURFACES.md and the core methodology is version 0.8.
+
+## October 7, 2026 - Interactive Surface Mesh
+
+Status: visualization-only update. Added maturity/projection-year mesh lines at two-year intervals to all three interactive surfaces, with Mesh On/Off buttons. Scenario updates preserve the mesh setting. Numerical projections, anchors, source dates and static-plot design are unchanged.
+
+Latest regenerated archive: data/20261008T010009_curve-surfaces_5b97054f (UTC timestamp; change date October 7 US Eastern). Prior artifacts are preserved. All 121 tests pass, including an export-payload regression test for every surface's contour lines, toggle controls and scenario updates. Interactive HTML export and archive hashes are verified; live browser visual testing remains unavailable. docs/YIELD_CURVE_SURFACES.md points to the new interactive file.
+
+## October 7, 2026 - Tighter Interactive Yield-Axis Limits
+
+Status: visualization-only update. Interactive Z limits now fit the selected starting scenario, with shared limits across its three half-life panels. Padding is 5% of the scenario yield span or at least 0.1 percentage point, rounded outward to 0.1 percentage point. Current-curve limits are approximately 3.0%-5.8%, replacing the empty zero-based region. Dropdown changes update the limits on all scenes while preserving mesh settings. Static matrix axes and all color scales remain globally fixed. Cross-scenario geometric height is no longer directly comparable in the interactive view; same-row half-life comparison remains valid.
+
+Latest archive: data/20261008T010334_curve-surfaces_4ab065c6. Numerical projection outputs are unchanged. All 122 tests pass, with new range and export-payload checks. HTML export and archive hashes are verified; connected-browser visual testing remains unavailable. Methodology links are updated.
+
+## October 7, 2026 - Adaptive Interactive Color Scale
+
+Status: visualization-only update. Color limits now use the selected starting scenario's actual minimum and maximum yields, shared across all three half-life panels. The current scenario uses approximately 3.1881%-5.64%, restoring palette contrast after the yield-axis tightening. The dropdown updates every panel's cmin/cmax and the colorbar while preserving mesh visibility. Flat surfaces use padded limits as a nonzero-range fallback. Colors remain comparable across half-lives within a scenario, not directly across different dropdown selections. The static comparison matrix retains global color limits.
+
+Latest archive: data/20261008T011121_curve-surfaces_c4408ab4. Projection values are unchanged. All 122 tests pass; the interactive export test now checks initial color bounds on each panel and alternate-scenario bounds in the dropdown update payload. HTML export and archive hashes are verified. Live browser visual verification remains unavailable. Methodology links and scale definitions are updated.
+
+## October 7, 2026 - Historical Yield Curve Surface In The Combined HTML
+
+Status: visualization/audit extension; forecast assumptions unchanged. Appended a full-width historical Treasury surface below the interactive projection panels. It uses all eleven archived maturities over 360 months from October 1996 through September 2026. X is maturity, Y historical calendar year, and Z/color par yield. Exact dates and observed/interpolated status are retained in hover data.
+
+Only same-date interior maturities are interpolated linearly. Observed values are preserved; missing months and unbracketed endpoints remain missing. No time filling, carry-forward or endpoint extrapolation is applied. The February 15, 2002 30-year quote is excluded from the February 28 common-date curve and explicitly archived, not mixed into month-end history. The original source archive is unchanged.
+
+Archive: data/20261008T012212_curve-surfaces_2e42b0e5. The historical grid contains 39,240 cells: 3,855 observed, 33,696 same-date maturity interpolations including the dense display mesh, and 1,689 unavailable. Grid, interpolation brackets/status, monthly coverage, exclusions and static historical PNG are saved. The HTML keeps historical and projection controls separate and embeds Plotly once.
+
+All 129 tests pass, including seven new historical-surface tests and combined HTML ordering/bundle checks. Live historical observations were reconciled to source values and all output hashes verified. The static historical surface was visually inspected. Live browser interaction testing remains unavailable. docs/YIELD_CURVE_SURFACES.md records the interpolation formula and links to the new combined file.
+
 ## Future Entry Template
 
 ### Date And Change Title

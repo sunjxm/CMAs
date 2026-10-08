@@ -3,6 +3,9 @@
   "horizon_years": 40,
   "steps_per_year": 12,
   "base_half_life_years": 5,
-  "half_life_scenarios_years": [3, 5, 8],
-  "note": "Half-lives are provisional sensitivity settings, not fitted estimates. Projected par nodes are not discount factors or expected asset returns."
+  "half_life_scenarios_years": [3, 5, 10],
+  "convergence_method": "exponential_then_linear",
+  "linear_start_year": 25,
+  "anchor_year": 30,
+  "note": "Exponential convergence through year 25, linear from the year-25 value to the exact anchor at year 30, then constant. Half-lives remain research assumptions. Surface plots show years 0-30; downstream 40-year paths are retained."
 }

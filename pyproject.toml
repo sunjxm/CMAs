@@ -13,6 +13,7 @@ dependencies = ["pandas>=2.2", "numpy>=1.24"]
 bloomberg = ["xbbg>=0.7.7"]
 official = ["openpyxl>=3.1", "xlrd>=2.0.1"]
 pricing = ["QuantLib>=1.43,<2"]
+plots = ["matplotlib>=3.8", "plotly>=5.18"]
 documents = ["python-docx>=1.1", "markdown-it-py>=3", "mdit-py-plugins>=0.4", "latex2mathml>=3.77", "mathml2omml>=0.0.2"]
 
 [tool.setuptools.packages.find]

@@ -21,7 +21,7 @@ PROJECT_DIR = Path(__file__).resolve().parent
 DATA_DIR = PROJECT_DIR / "data"
 DOWNLOAD_TASKS = ("check", "metadata", "history", "treasury-par", "official-inputs")
 TASKS = (*DOWNLOAD_TASKS, "process-inputs", "anchor-review", "curve-projection",
-         "asset-review", "asset-metadata", "asset-history", "asset-analytics", "asset-analytics-probe", "asset-analytics-normalize", "tips-inputs", "bond-returns", "composition-inputs", "credit-review", "holding-returns", "global-hedge-review", "workbook-inputs", "foreign-cash", "all")
+         "asset-review", "asset-metadata", "asset-history", "asset-analytics", "asset-analytics-probe", "asset-analytics-normalize", "tips-inputs", "bond-returns", "composition-inputs", "credit-review", "holding-returns", "global-hedge-review", "workbook-inputs", "foreign-cash", "curve-surfaces", "all")
 
 
 def run(task=DEFAULT_TASK, start=START_DATE, end=END_DATE, groups=GROUPS,
@@ -31,10 +31,14 @@ def run(task=DEFAULT_TASK, start=START_DATE, end=END_DATE, groups=GROUPS,
         curve_bundle=None, analytics_bundle=None, history_bundle=None, constituent_bundle=None,
         global_hedge_inputs=None, loss_segments=None, spread_segments=None,
         workbook=None, workbook_asof=None, workbook_rating_method=None,
-        foreign_cash_settings=None, foreign_cash_inputs=None, workbook_bundle=None):
+        foreign_cash_settings=None, foreign_cash_inputs=None, workbook_bundle=None, surface_settings=None):
     """Run a selected task or the full data pipeline, independent of working directory."""
     if task not in TASKS:
         raise ValueError(f"Unknown task: {task}. Choose one of {TASKS}.")
+    if task == "curve-surfaces":
+        from cma_curve.curve_surfaces import run_curve_surfaces
+        return run_curve_surfaces(output, surface_settings or PROJECT_DIR / "curve_surface_settings.json",
+                                  curve_bundle, treasury_bundle)
     if task == "foreign-cash":
         if frequency != "monthly":
             raise ValueError("Foreign cash projection uses monthly steps.")
@@ -153,6 +157,7 @@ def main(argv=None):
     parser.add_argument("--foreign-cash-settings", type=Path)
     parser.add_argument("--foreign-cash-inputs", type=Path)
     parser.add_argument("--workbook-bundle", type=Path)
+    parser.add_argument("--surface-settings", type=Path)
     parser.add_argument("--assets", nargs="+", help="Asset keys to review/download; defaults to all six.")
     args = parser.parse_args(argv)
     run(args.task, args.start, args.end, args.groups, args.output, args.host, args.port, args.frequency,
@@ -161,7 +166,7 @@ def main(argv=None):
         args.curve_bundle, args.analytics_bundle, args.history_bundle,
         args.constituent_bundle, args.global_hedge_inputs, args.loss_segments, args.spread_segments,
         args.workbook, args.workbook_asof, args.workbook_rating_method,
-        args.foreign_cash_settings, args.foreign_cash_inputs, args.workbook_bundle)
+        args.foreign_cash_settings, args.foreign_cash_inputs, args.workbook_bundle, args.surface_settings)
 
 
 if __name__ == "__main__":

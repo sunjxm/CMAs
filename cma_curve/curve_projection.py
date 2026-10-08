@@ -1,4 +1,4 @@
-"""Offline exponential projection of official Treasury par nodes, not pricing."""
+"""Offline par-node convergence with optional finite-time linear landing."""
 
 from datetime import datetime, timezone
 import json
@@ -11,14 +11,45 @@ import pandas as pd
 from .analysis import load_settings, markdown_table, sha256
 
 
-def project_par_curve(starting, anchors, candidate, horizons, half_life):
+def convergence_decay(horizons, half_life, linear_start_year=None, anchor_year=None):
+    horizons = np.asarray(horizons, dtype=float)
+    if not np.isfinite(half_life) or half_life <= 0:
+        raise ValueError("Half-life must be positive and finite.")
+    if not np.isfinite(horizons).all() or (horizons < 0).any():
+        raise ValueError("Convergence horizons must be finite and nonnegative.")
+    if (linear_start_year is None) != (anchor_year is None):
+        raise ValueError("Specify both the linear start year and anchor year, or neither.")
+    decay = np.exp2(-horizons / half_life)
+    if linear_start_year is not None:
+        if not np.isfinite([linear_start_year, anchor_year]).all() or not 0 < linear_start_year < anchor_year:
+            raise ValueError("Require 0 < linear start year < anchor year.")
+        linear = np.exp2(-linear_start_year / half_life) * np.clip(
+            (anchor_year - horizons) / (anchor_year - linear_start_year), 0, 1)
+        decay = np.where(horizons > linear_start_year, linear, decay)
+    return decay
+
+
+def convergence_options(config):
+    method = config.get("convergence_method", "exponential")
+    if method == "exponential":
+        return {}
+    if method != "exponential_then_linear":
+        raise ValueError("Unknown convergence method.")
+    start, end = config["linear_start_year"], config["anchor_year"]
+    convergence_decay([0], 1, start, end)
+    if end > config["horizon_years"]:
+        raise ValueError("Projection horizon must reach the anchor year.")
+    return {"linear_start_year": start, "anchor_year": end}
+
+
+def project_par_curve(starting, anchors, candidate, horizons, half_life,
+                      linear_start_year=None, anchor_year=None):
     horizons = np.asarray(horizons, dtype=float)
     if horizons.ndim != 1 or not len(horizons) or not np.isfinite(horizons).all():
         raise ValueError("Horizons must be a nonempty finite one-dimensional sequence.")
     if horizons[0] != 0 or np.any(np.diff(horizons) <= 0):
         raise ValueError("Horizons must start at zero and increase strictly.")
-    if not np.isfinite(half_life) or half_life <= 0:
-        raise ValueError("Half-life must be positive and finite.")
+    decay = convergence_decay(horizons, half_life, linear_start_year, anchor_year)
     selected = anchors[anchors.candidate == candidate].copy()
     if selected.empty or selected.key.duplicated().any() or starting.key.duplicated().any():
         raise ValueError("Candidate and starting nodes must be nonempty and unique.")
@@ -39,7 +70,7 @@ def project_par_curve(starting, anchors, candidate, horizons, half_life):
         raise ValueError("Maturities must be unique and positive.")
     rows = []
     for node in nodes.itertuples(index=False):
-        yields = node.anchor_decimal + (node.rate_decimal - node.anchor_decimal) * np.exp2(-horizons / half_life)
+        yields = node.anchor_decimal + (node.rate_decimal - node.anchor_decimal) * decay
         rows.append(pd.DataFrame({"candidate": candidate, "key": node.key,
                                  "maturity_years": node.maturity_years, "horizon_years": horizons,
                                  "half_life_years": half_life, "curve_type": "par",
@@ -82,10 +113,11 @@ def run_projection(output, anchor_settings, projection_settings, review_bundle=N
         raise ValueError("Half-life scenarios must be positive and finite.")
     if len(set(scenarios)) != len(scenarios) or config["base_half_life_years"] not in scenarios:
         raise ValueError("Unique scenarios must include the base half-life.")
+    options = convergence_options(config)
     starting = pd.read_csv(review / "starting_par_curve.csv", parse_dates=["date"])
     anchors = pd.read_csv(review / "candidate_anchors.csv")
     horizons = np.arange(config["horizon_years"] * config["steps_per_year"] + 1) / config["steps_per_year"]
-    paths = pd.concat([project_par_curve(starting, anchors, settings["primary_candidate"], horizons, h)
+    paths = pd.concat([project_par_curve(starting, anchors, settings["primary_candidate"], horizons, h, **options)
                        for h in scenarios], ignore_index=True)
     paths["scenario"] = paths.half_life_years.map(lambda h: "base" if h == config["base_half_life_years"] else f"half_life_{h:g}")
     stamp = datetime.now(timezone.utc)
@@ -97,7 +129,13 @@ def run_projection(output, anchor_settings, projection_settings, review_bundle=N
     report = ["# Treasury Par Curve Projection", "", "Status: research draft, not asset-return forecasts.", "",
               f"Selected candidate: {settings['primary_candidate']}. Starting curve date: {starting.date.iloc[0].date()}.", "",
               f"Base half-life: {config['base_half_life_years']} years; sensitivity half-lives: {scenarios}.", "",
-              "$$", r"y_m(h) = a_m + \left[y_m(0)-a_m\right] 2^{-h/H_m}", "$$", "",
+              "$$", r"y_m(t)=a_m+[y_m(0)-a_m]d(t)", "$$", "",
+              (r"$$d(t)=\begin{cases}2^{-t/H},&0\le t\le L\\"
+               r"2^{-L/H}(T-t)/(T-L),&L<t<T\\0,&t\ge T\end{cases}$$"
+               if options else r"$$d(t)=2^{-t/H}$$"), "",
+              (f'Exponential through year {options["linear_start_year"]}; linear landing at year '
+               f'{options["anchor_year"]}; held at anchor thereafter. Continuous levels, with a slope change at the handoff.'
+               if options else "Pure exponential convergence approaches the anchor asymptotically."), "",
               "Horizon and half-life are years; rates are decimal values. Maturity and forecast horizon are distinct.", "",
               "The base half-life is provisional, not fitted or committee-approved. No market overlay is applied. "
               "Nodes are not interpolated, bootstrapped, or used to price cash flows in this step. "

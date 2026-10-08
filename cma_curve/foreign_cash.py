@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 from .analysis import markdown_table, sha256
 from .bond_returns import checked_source, latest_source
+from .curve_projection import convergence_decay, convergence_options
 from .data import save_bundle
 
 INPUT_COLUMNS = ['bucket', 'current_cash_decimal', 'current_cash_asof',
@@ -54,7 +55,8 @@ def validate_assumptions(inputs, weights, asof):
     return data.merge(weights, on='bucket', validate='one_to_one'), []
 
 
-def project_foreign_cash(usd_paths, assumptions, usd_inflation, shifts=(0,), basis_bps=0, cost_bps=0):
+def project_foreign_cash(usd_paths, assumptions, usd_inflation, shifts=(0,), basis_bps=0, cost_bps=0,
+                         linear_start_year=None, anchor_year=None):
     """Use horizon-t cash for the following month; overlay is not standalone total return."""
     required = {'scenario', 'horizon_years', 'half_life_years', 'rate_decimal', 'anchor_decimal'}
     if not required.issubset(usd_paths.columns) or usd_paths.empty:
@@ -83,7 +85,8 @@ def project_foreign_cash(usd_paths, assumptions, usd_inflation, shifts=(0,), bas
             bucket_paths = []
             for row in assumptions.itertuples(index=False):
                 foreign_anchor = anchor + row.inflation_anchor_decimal - usd_inflation + row.real_cash_adjustment_bps / 10000 + shift / 10000
-                rates = foreign_anchor + (row.current_cash_decimal - foreign_anchor) * np.exp2(-h / half_life)
+                rates = foreign_anchor + (row.current_cash_decimal - foreign_anchor) * convergence_decay(
+                    h, half_life, linear_start_year, anchor_year)
                 bucket_paths.append(pd.DataFrame({'scenario': scenario, 'anchor_case': name,
                     'bucket': row.bucket, 'horizon_years': h, 'weight_decimal': row.weight_decimal,
                     'foreign_cash_decimal': rates, 'foreign_anchor_decimal': foreign_anchor,
@@ -141,7 +144,8 @@ def run_foreign_cash(output, settings_path, assumptions_path=None, workbook_bund
     assumptions, missing = validate_assumptions(inputs, weights, asof)
     paths, detail = (pd.DataFrame(), pd.DataFrame()) if missing else project_foreign_cash(
         usd, assumptions, usd_inflation, config['foreign_anchor_sensitivities_bps'],
-        config['basis_adjustment_bps'], config['implementation_cost_bps'])
+        config['basis_adjustment_bps'], config['implementation_cost_bps'],
+        **convergence_options(cm.get('projection_settings', {})))
     coverage = weights.copy()
     coverage['cash_inputs_complete'] = ~coverage.bucket.isin(missing)
     status = 'missing_inputs_no_projection' if missing else 'research_hedge_overlay_not_total_return'

@@ -322,6 +322,17 @@ Links the existing US one-month cash projection to seven named currencies (EUR, 
 
 Configuration is in `foreign_cash_settings.json`. Inputs and archives can be pinned with `--foreign-cash-inputs`, `--foreign-cash-settings`, `--workbook-bundle` and `--curve-bundle`. The Other bucket explicitly absorbs remaining currency weights and the displayed rounding residual. See `docs/FOREIGN_CASH_BASKET.md` for LaTeX formulas, units, conventions, calibration and audit trail.
 
+## Finite-Time Curve Convergence And Surfaces
+
+```powershell
+python main.py --task curve-projection
+python main.py --task curve-surfaces
+```
+
+Current settings use 3/5/10-year half-lives, exponential convergence through year 25, linear landing at exact anchors by year 30, then constant anchors through year 40. The surface task creates a 5 x 3 PNG matrix, current-row PNG, offline interactive HTML and monthly scenario CSVs. Current September 30, 2026 comes first, with four historical observed starting curves. All rows share current-vintage anchors; they are not historical forecasts.
+
+Edit dates/labels in `curve_surface_settings.json` or pass `--surface-settings`; source archives can be pinned with `--curve-bundle` and `--treasury-bundle`. Optional plotting dependencies are installed with `pip install -e ".[plots]"`. See `docs/YIELD_CURVE_SURFACES.md` for formulas, historical dates, limits and final plot links. Older return archives are not automatically regenerated.
+
 ## References
 
 - [xbbg request interface](https://xbbg.org/python/quickstart)

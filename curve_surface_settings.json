@@ -1,0 +1,12 @@
+{
+  "status": "research_draft_not_approved",
+  "keys": ["BC_1MONTH", "BC_2YEAR", "BC_5YEAR", "BC_10YEAR", "BC_30YEAR"],
+  "display_horizon_years": 30,
+  "historical_scenarios": [
+    {"date": "2006-12-29", "label": "Mild inversion"},
+    {"date": "2009-12-31", "label": "Steep curve"},
+    {"date": "2020-07-31", "label": "Low-yield curve"},
+    {"date": "2023-06-30", "label": "Deep inversion"}
+  ],
+  "note": "Current curve is always first. Historical observed starting curves use the same current-vintage anchors; these are counterfactual initialization scenarios, not historical forecasts. Maturity interpolation is linear for display only."
+}

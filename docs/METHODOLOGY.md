@@ -2,7 +2,7 @@
 
 ## Document Control
 
-Version: 0.7, working methodology draft. Updated October 7, 2026 (US Eastern time).
+Version: 0.8, working methodology draft. Updated October 7, 2026 (US Eastern time).
 
 Status: data acquisition, source processing, candidate anchors, par-node projections, benchmark/TIPS inputs and first-order research return paths for Short Term Bond and US Aggregate are implemented. Current composition review, credit loss/spread calculators, synthetic Treasury discount-factor/holding-return comparisons and a global hedge-carry calculator are also implemented; see HANDBOOK_IMPLEMENTATION.md. The selected primary research candidate is HLW median20. Equilibrium levels, convergence and return approximations are not committee-approved. Complete composition, credit assumptions, foreign inputs, index-level repricing and the other four completed return sleeves remain outstanding. See INVESTMENT_GRADE_RETURNS.md for the existing index return engine, which these research extensions have not silently replaced.
 
@@ -161,16 +161,26 @@ The historical 10-year par spread to three-month yields averaged approximately 1
 The implemented research baseline projects each maturity toward its selected equilibrium candidate:
 
 $$
-y_m(h) = a_m + \left[y_m(0) - a_m\right] 2^{-\frac{h}{H_m}}
+y_m(t) = a_m + \left[y_m(0) - a_m\right] d_H(t)
 $$
 
-Here $a_m$ is the selected equilibrium candidate, $y_m(0)$ is the starting par yield, and $H_m > 0$ is the convergence half-life. Forecast horizon $h$ and half-life $H_m$ are both measured in years. The engine outputs monthly par-node paths over 40 years.
+$$
+d_H(t)=\begin{cases}
+2^{-t/H}, & 0\le t\le25,\\
+2^{-25/H}(30-t)/5, &25<t<30,\\
+0, &t\ge30.
+\end{cases}
+$$
 
-Maturity m is distinct from forecast horizon h. Horizon zero must reproduce the common-date starting curve. Half-lives of three, five, and eight years are proposed sensitivity settings, not empirically validated constants. Exponential convergence approaches the anchor asymptotically; it does not imply arrival at a fixed terminal year.
+Here $a_m$ is the selected equilibrium candidate, $y_m(0)$ is the starting par yield, and $H > 0$ is the convergence half-life. Forecast horizon $t$ and half-life $H$ are both measured in years. The engine outputs monthly par-node paths over 40 years, reaching the anchor exactly at year 30 and remaining there thereafter.
+
+Maturity m is distinct from forecast horizon t. Horizon zero must reproduce the common-date starting curve. Half-lives of three, five, and ten years are user-selected sensitivity settings, not empirically validated constants. The exponential phase ends at year 25. The remaining gap then closes linearly by year 30. Levels are continuous at the handoff, but their slopes generally change.
 
 An optional near-term OIS/futures/survey path can be assessed after the baseline is implemented. Market forwards are not automatically unbiased forecasts and a forward short rate is not a future ten-year bond yield. Premium, convexity, instrument-basis, and handoff assumptions would need separate treatment. The additional layer should be retained only when it improves forecast validation or materially informs portfolio decisions.
 
-The provisional base uses a five-year half-life at all maturities, with three- and eight-year sensitivity paths. This is a configuration choice, not a fitted estimate. The projection preserves the common-date starting nodes and verifies source checksums and anchor settings. It does not yet interpolate or bootstrap discount curves or calculate portfolio returns. The primary HLW median20 selection changes the neutral-rate input only; historical spreads continue to use their 30-year mean.
+The provisional base uses a five-year half-life at all maturities, with three- and ten-year sensitivity paths. This is a configuration choice, not a fitted estimate. The projection preserves the common-date starting nodes and verifies source checksums and anchor settings. This task does not bootstrap discount curves or calculate portfolio returns. Surface comparisons use piecewise-linear maturity interpolation solely for visualization, with exact modeled nodes retained. The primary HLW median20 selection changes the neutral-rate input only; historical spreads continue to use their 30-year mean.
+
+The surface comparison has five starting-curve rows (current September 30, 2026 first) and three half-life columns. Historical observed curves from December 2006, December 2009, July 2020 and June 2023 use the same current-vintage anchors. These are alternative initialization scenarios, not historical forecasts or a point-in-time backtest. Details and charts are in docs/YIELD_CURVE_SURFACES.md. Old curve and return archives are preserved; downstream return forecasts have not been regenerated with this change.
 
 ## 10. Pricing And Return Design: Planned
 
