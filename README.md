@@ -1,10 +1,14 @@
 # CMA Yield Curve Inputs
 
 This project retrieves inputs and generates research-draft equilibrium yield
-candidates for a 30-plus-year US CMA model. It does not yet approve anchors,
-project curve paths, bootstrap discount factors, or calculate bond returns.
+candidates, projected par-curve paths and interactive surfaces for a 30-plus-year
+US CMA model. Additional bond-return research modules are under development;
+outputs are not committee-approved assumptions.
 The evolving methodology is in docs/METHODOLOGY.md, with a development trail in
 docs/METHODOLOGY_LOG.md. Remaining phases are described in PLAN.md.
+
+For cloning onto another Windows machine, installing dependencies, downloading
+inputs and generating the surfaces, follow [Fresh-Machine Setup](docs/FRESH_MACHINE_SETUP.md).
 
 ## Run In Your Existing Environment
 
@@ -192,7 +196,8 @@ python main.py --task asset-analytics-normalize
 ```
 
 Projection settings are in projection_settings.json: 40 years at monthly steps,
-a provisional five-year base half-life and three/eight-year sensitivities. Outputs
+a provisional five-year base half-life and three/ten-year sensitivities, with
+exponential convergence through year 25 and linear landing at year 30. Outputs
 are par-node projections, not discount factors or asset-return forecasts. Changing
 anchor settings requires a new anchor-review before projection. Use --review-bundle
 to pin an archived review for reproducibility.
